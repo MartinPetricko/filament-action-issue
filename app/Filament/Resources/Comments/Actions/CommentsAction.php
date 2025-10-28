@@ -2,14 +2,10 @@
 
 namespace App\Filament\Resources\Comments\Actions;
 
-use App\Models\Comment;
 use Filament\Actions\Action;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
-use Filament\Forms\Components\Textarea;
-use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class CommentsAction extends Action
 {
@@ -24,26 +20,15 @@ class CommentsAction extends Action
 
         $this->slideOver();
         $this->modalWidth(Width::Large);
+        $this->modalCancelAction(false);
+        $this->modalSubmitAction(false);
 
-        $this->schema([
-            Textarea::make('message')
-                ->required(),
-            SpatieMediaLibraryFileUpload::make('attachments')
-                ->collection('attachments')
-                ->multiple(),
-        ]);
+        $this->modalContent(fn(Model $record, Action $action): View => view('components.actions.comments_list', [
+            'record' => $record,
+        ]));
 
-        $this->action(function (Schema $schema, Model $record, array $data) {
-            $comment = Comment::make($data);
-
-            $comment->commentable()->associate($record);
-            $comment->commenter()->associate(Auth::user());
-
-            $comment->save();
-
-            $schema->model($comment)->saveRelationships();
-
-            $this->success();
-        });
+        $this->modalContentFooter(fn(Model $record, Action $action): View => view('components.actions.comments', [
+            'record' => $record,
+        ]));
     }
 }
