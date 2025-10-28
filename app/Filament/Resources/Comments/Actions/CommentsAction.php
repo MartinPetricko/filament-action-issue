@@ -6,10 +6,10 @@ use App\Models\Comment;
 use Filament\Actions\Action;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
+use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use Tiptap\Core\Schema;
 
 class CommentsAction extends Action
 {
@@ -41,7 +41,6 @@ class CommentsAction extends Action
 
             $comment->save();
 
-            $this->record($comment);
             $schema->model($comment)->saveRelationships();
 
             $this->success();
